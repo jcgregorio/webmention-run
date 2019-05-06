@@ -4,6 +4,11 @@ webmention-run
 An implementation of [Webmention](https://www.w3.org/TR/webmention/) that runs
 on [Google Cloud Run](https://cloud.google.com/run/docs/).
 
+The webmentions are stored in Google Datastore, including thumbnails of authors
+images if they are provided. The application has a web UI for triaging
+webmentions and can automatically validate incoming webmentions in an
+asynchronous manner as suggested by the W3C specification.
+
 Prerequisites
 -------------
 
