@@ -1,19 +1,20 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"
 )
 
+// These values are over-ridden by the values in `config.mk`, see
+// README.md for an explaination of their values.
 var (
-	CLIENT_ID           = "952643138919-jh0117ivtbqkc9njoh91csm7s465c4na.apps.googleusercontent.com"
+	CLIENT_ID           = "952....googleusercontent.com"
 	REGION              = "us-central1"
-	PROJECT             = "heroic-muse-88515"
+	PROJECT             = "my-project-name"
 	DATASTORE_NAMESPACE = "blog"
-	HOST                = fmt.Sprintf("https://%s-%s.cloudfunctions.net", REGION, PROJECT)
-	ADMINS              = []string{"joe.gregorio@gmail.com"}
+	HOST                = "https://webmention-...-a.run.app"
+	ADMINS              = []string{"someone@example.org"}
 	PORT                = "8000"
 )
 

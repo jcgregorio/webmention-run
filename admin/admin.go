@@ -10,7 +10,7 @@ import (
 	"github.com/jcgregorio/webmention-run/config"
 )
 
-type Claims struct {
+type claims struct {
 	Mail    string `json:"email"`
 	Aud     string `json:"aud"`
 	Name    string `json:"name"`
@@ -23,6 +23,10 @@ var (
 	}
 )
 
+// IsAdmin returns true if the user is logged in and their email address appears
+// in config.ADMINS.
+//
+// The actual login is handled in JS by Google Sign-In for Websites.
 func IsAdmin(r *http.Request, log slog.Logger) bool {
 	idtoken, err := r.Cookie("id_token")
 	if err != nil {
@@ -34,7 +38,7 @@ func IsAdmin(r *http.Request, log slog.Logger) bool {
 		log.Infof("Failed to validate idtoken: %#v %s", *resp, err)
 		return false
 	}
-	claims := Claims{}
+	claims := claims{}
 	if err := json.NewDecoder(resp.Body).Decode(&claims); err != nil {
 		log.Infof("Failed to decode claims: %s", err)
 		return false
