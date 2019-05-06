@@ -23,7 +23,7 @@ import (
 	"willnorris.com/go/webmention"
 
 	"github.com/jcgregorio/slog"
-	"github.com/jcgregorio/webmention-func/ds"
+	"github.com/jcgregorio/webmention-run/ds"
 	"github.com/nfnt/resize"
 )
 

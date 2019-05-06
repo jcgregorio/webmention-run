@@ -1,5 +1,8 @@
 SHELL=/bin/bash
 include ./config.mk
+build:
+	go install ./webmention.go
+
 run:
 	go run ./webmention.go
 

@@ -38,12 +38,13 @@ Then clone this repository and edit config.mk:
   have to deploy this application first, find the name, update config.mk, and
   then redeploy with the correct HOST value.
 
-**CLIENT_ID** - Google Sign-In for Websites is used to protect the `/Triage`
-  endpoint. See the [Google Sign-In for Websites](https://developers.google.com/identity/sign-in/web/sign-in)
-  page for how to configure a client id. Note that you need to know the
-  domain name you are serving off of, so just like HOST, you may need to
-  deploy the application first, find the domain name, and then update the
-  configuration for the client.
+**CLIENT_ID** - Google Sign-In for Websites is used to protect the `/`
+  endpoint used to manually triage webmentions. See the [Google Sign-In for
+  Websites](https://developers.google.com/identity/sign-in/web/sign-in) page
+  for how to configure a client id. Note that you need to know the domain
+  name you are serving off of, so just like HOST, you may need to deploy the
+  application first, find the domain name, and then update the configuration
+  for the client.
 
 **DATASTORE_NAMESPACE** - The namespace in the Google Cloud Datastore under
   which webmention data will be stored. Note that no indices are needed.
@@ -76,7 +77,7 @@ on every page you want to receive webmentions.
 
 You can visit
 
-    $HOST/Triage
+    $HOST/
 
 to manually triage incoming webmentions. If you want to automatically triage
 webmentions by confirming that the source link really does contain a link

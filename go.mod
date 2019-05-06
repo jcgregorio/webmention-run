@@ -1,6 +1,6 @@
-module github.com/jcgregorio/webmention-func
+module github.com/jcgregorio/webmention-run
 
-go 1.11
+go 1.12
 
 require (
 	cloud.google.com/go v0.37.2
@@ -8,7 +8,7 @@ require (
 	github.com/gorilla/mux v1.6.2
 	github.com/jcgregorio/logger v0.0.0-20190327205355-c696fa1d0bdc
 	github.com/jcgregorio/slog v0.0.0-20190327203141-011247cf2291
-	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348 // indirect
+	github.com/jcgregorio/webmention-func v0.0.0-20190329235137-ad8e538f1e10
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/stretchr/testify v1.3.0
 	google.golang.org/api v0.3.0

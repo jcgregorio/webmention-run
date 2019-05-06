@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/jcgregorio/slog"
-	"github.com/jcgregorio/webmention-func/config"
+	"github.com/jcgregorio/webmention-run/config"
 )
 
 type Claims struct {

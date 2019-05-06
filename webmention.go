@@ -13,9 +13,9 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/jcgregorio/logger"
-	"github.com/jcgregorio/webmention-func/admin"
-	"github.com/jcgregorio/webmention-func/config"
-	"github.com/jcgregorio/webmention-func/mention"
+	"github.com/jcgregorio/webmention-run/admin"
+	"github.com/jcgregorio/webmention-run/config"
+	"github.com/jcgregorio/webmention-run/mention"
 )
 
 var (
@@ -155,7 +155,7 @@ var (
 `))
 )
 
-func Init() {
+func initialize() {
 	var err error
 	m, err = mention.NewMentions(context.Background(), config.PROJECT, config.DATASTORE_NAMESPACE, log)
 	if err != nil {
@@ -171,8 +171,8 @@ type triageContext struct {
 	Offset   int64
 }
 
-// Triage displays the triage page for Webmentions.
-func Triage(w http.ResponseWriter, r *http.Request) {
+// triageHandler displays the triage page for Webmentions.
+func triageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	context := &triageContext{}
 	isAdmin := admin.IsAdmin(r, log)
@@ -211,9 +211,9 @@ type updateMention struct {
 	Value string `json:"value"`
 }
 
-// UpdateMention updates the triage state of a webmention.
+// updateMentionHandler updates the triage state of a webmention.
 // Called from the Triage page.
-func UpdateMention(w http.ResponseWriter, r *http.Request) {
+func updateMentionHandler(w http.ResponseWriter, r *http.Request) {
 	isAdmin := admin.IsAdmin(r, log)
 	if !isAdmin {
 		http.Error(w, "Unauthorized", 401)
@@ -229,13 +229,14 @@ func UpdateMention(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// MentionsContext is the data for expanding the Mentions template.
 type MentionsContext struct {
 	Host     string
 	Mentions []*mention.Mention
 }
 
 // Mentions returns HTML describing all the good Webmentions for the given URL.
-func Mentions(w http.ResponseWriter, r *http.Request) {
+func mentionsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -255,8 +256,8 @@ func Mentions(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// IncomingWebMention handles incoming Webmentions.
-func IncomingWebMention(w http.ResponseWriter, r *http.Request) {
+// incomingWebMentionHandler handles incoming Webmentions.
+func incomingWebMentionHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -275,7 +276,7 @@ func IncomingWebMention(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func Thumbnail(w http.ResponseWriter, r *http.Request) {
+func thumbnailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/png")
 	vars := mux.Vars(r)
 	b, err := m.GetThumbnail(r.Context(), vars["id"])
@@ -290,10 +291,10 @@ func Thumbnail(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// VerifyQueuedMentions verifies untriaged webmentions.
+// verifyQueuedMentions verifies untriaged webmentions.
 //
 // Should be called on a timer.
-func VerifyQueuedMentions(w http.ResponseWriter, r *http.Request) {
+func verifyQueuedMentions(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{
 		Timeout: time.Second * 30,
 	}
@@ -301,15 +302,15 @@ func VerifyQueuedMentions(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	Init()
+	initialize()
 
 	r := mux.NewRouter()
-	r.HandleFunc("/Mentions", Mentions).Methods("GET", "OPTIONS")
-	r.HandleFunc("/IncomingWebMention", IncomingWebMention).Methods("POST")
-	r.HandleFunc("/UpdateMention", UpdateMention).Methods("POST")
-	r.HandleFunc("/Triage", Triage).Methods("GET")
-	r.HandleFunc("/Thumbnail/{id:[a-z0-9]+}", Thumbnail).Methods("GET")
-	r.HandleFunc("/VerifyQueuedMentions", VerifyQueuedMentions).Methods("POST")
+	r.HandleFunc("/Mentions", mentionsHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/IncomingWebMention", incomingWebMentionHandler).Methods("POST")
+	r.HandleFunc("/UpdateMention", updateMentionHandler).Methods("POST")
+	r.HandleFunc("/Thumbnail/{id:[a-z0-9]+}", thumbnailHandler).Methods("GET")
+	r.HandleFunc("/VerifyQueuedMentions", verifyQueuedMentions).Methods("POST")
+	r.HandleFunc("/", triageHandler).Methods("GET")
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":"+config.PORT, nil))
