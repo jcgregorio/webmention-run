@@ -335,6 +335,9 @@ func (m *Mentions) findHEntry(ctx context.Context, u2r UrlToImageReader, mention
 	for _, it := range items {
 		if in("h-entry", it.Type) {
 			mention.Title = firstPropAsString(it, "name")
+			if mention.Title == "" {
+				mention.Title = firstPropAsString(it, "uid")
+			}
 			if strings.HasPrefix(mention.Title, "tag:twitter") {
 				mention.Title = "Twitter"
 				if firstPropAsString(it, "like-of") != "" {
