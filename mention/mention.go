@@ -349,12 +349,12 @@ func (m *Mentions) findHEntry(ctx context.Context, u2r UrlToImageReader, mention
 			}
 			if strings.HasPrefix(mention.Title, "tag:twitter") {
 				mention.Title = "Twitter"
-				if firstPropAsString(it, "like-of") != "" {
-					mention.Title += " Like"
-				}
-				if firstPropAsString(it, "repost-of") != "" {
-					mention.Title += " Repost"
-				}
+			}
+			if firstPropAsString(it, "like-of") != "" {
+				mention.Title += " Like"
+			}
+			if firstPropAsString(it, "repost-of") != "" {
+				mention.Title += " Repost"
 			}
 			if t, err := time.Parse(time.RFC3339, firstPropAsString(it, "published")); err == nil {
 				mention.Published = t
