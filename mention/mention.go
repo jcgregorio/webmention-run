@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 
@@ -196,6 +197,12 @@ func (m *Mentions) VerifyQueuedMentions(c *http.Client) {
 	}
 }
 
+type MentionSlice []*Mention
+
+func (p MentionSlice) Len() int           { return len(p) }
+func (p MentionSlice) Less(i, j int) bool { return p[i].TS.Before(p[j].TS) }
+func (p MentionSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+
 func (m *Mentions) get(ctx context.Context, target string, all bool) []*Mention {
 	ret := []*Mention{}
 	q := m.DS.NewQuery(MENTIONS).
@@ -217,6 +224,7 @@ func (m *Mentions) get(ctx context.Context, target string, all bool) []*Mention 
 		}
 		ret = append(ret, mention)
 	}
+	sort.Sort(MentionSlice(ret))
 	return ret
 }
 

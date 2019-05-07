@@ -142,7 +142,7 @@ var (
 					{{ .Author }}
 				{{ end }}
 			</span>
-			<time datetime="{{ .Published | rfc3999 }}">{{ .Published | humanTime }}</time>
+			<time datetime="{{ .TS | rfc3999 }}">{{ .TS | humanTime }}</time>
 			<a class="wm-content" href="{{ .Source }}" rel=nofollow>
 				{{ if .Title }}
 					{{ .Title | trunc }}
