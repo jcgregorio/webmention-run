@@ -182,6 +182,7 @@ func (m *Mentions) VerifyQueuedMentions(c *http.Client) {
 	queued := m.GetQueued(context.Background())
 	m.log.Infof("About to slow verify %d queud mentions.", len(queued))
 	for _, mention := range queued {
+		mention.Published = time.Now()
 		m.log.Infof("Verifying queued webmention from %q", mention.Source)
 		if m.SlowValidate(mention, c) == nil {
 			mention.State = GOOD_STATE
