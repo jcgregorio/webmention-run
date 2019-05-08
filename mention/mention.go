@@ -103,6 +103,7 @@ type Mention struct {
 	AuthorURL string    `datastore:",noindex"`
 	Published time.Time `datastore:",noindex"`
 	Thumbnail string    `datastore:",noindex"`
+	URL       string    `datastore:",noindex"`
 }
 
 func New(source, target string) *Mention {
@@ -184,6 +185,7 @@ func (m *Mentions) VerifyQueuedMentions(c *http.Client) {
 	m.log.Infof("About to slow verify %d queud mentions.", len(queued))
 	for _, mention := range queued {
 		mention.Published = time.Now()
+		mention.URL = mention.Source
 		m.log.Infof("Verifying queued webmention from %q", mention.Source)
 		if m.SlowValidate(mention, c) == nil {
 			mention.State = GOOD_STATE
@@ -355,6 +357,9 @@ func (m *Mentions) findHEntry(ctx context.Context, u2r UrlToImageReader, mention
 			}
 			if firstPropAsString(it, "repost-of") != "" {
 				mention.Title += " Repost"
+			}
+			if url := firstPropAsString(it, "url"); url != "" {
+				mention.URL = url
 			}
 			if t, err := time.Parse(time.RFC3339, firstPropAsString(it, "published")); err == nil {
 				mention.Published = t

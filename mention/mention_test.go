@@ -91,9 +91,7 @@ func TestParseMicroformats(t *testing.T) {
 	<header class="post-header">
 	<h1 class="post-title p-name" itemprop="name headline">WebMention Only</h1>
 	<p class="post-meta">
-	<a class="u-url" href="/news/2018/01/webmention-only">
     	<time datetime="2018-01-13T00:00:00-05:00" itemprop="datePublished" class="dt-published"> Jan 13, 2018 </time>
-	</a>
 	•
 	<a rel="author" class="p-author h-card" href="/about">
 	    <span itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -117,11 +115,13 @@ func TestParseMicroformats(t *testing.T) {
 	m := InitForTesting(t)
 
 	reader := bytes.NewReader([]byte(raw))
-	u, err := url.Parse("https://bitworking.org/news/2018/01/webmention-only")
+	u, err := url.Parse("https://bitworking.org/news/2018/01/webmention-only-2")
 	assert.NoError(t, err)
 	data := microformats.Parse(reader, u)
+	// VerifyQueuedMentions will start with Source == URL.
 	mention := &Mention{
-		Source: "https://bitworking.org/news/2018/01/webmention-only",
+		Source: "https://bitworking.org/news/2018/01/webmention-only-2",
+		URL:    "https://bitworking.org/news/2018/01/webmention-only-2",
 	}
 	urlToImageReader := func(url string) (io.ReadCloser, error) {
 		return os.Open("./testdata/author_image.jpg")
@@ -131,6 +131,7 @@ func TestParseMicroformats(t *testing.T) {
 	assert.Equal(t, "2018-01-13 00:00:00 -0500 EST", mention.Published.String())
 	assert.Equal(t, "f3f799d1a61805b5ee2ccb5cf0aebafa", mention.Thumbnail)
 	assert.Equal(t, "https://bitworking.org/about", mention.AuthorURL)
+	assert.Equal(t, "https://bitworking.org/news/2018/01/webmention-only-2", mention.URL)
 }
 
 func TestParseMicroformatsBridgy(t *testing.T) {
@@ -197,4 +198,5 @@ body {
 	assert.Equal(t, "Twitter Like", mention.Title)
 	assert.Equal(t, "f3f799d1a61805b5ee2ccb5cf0aebafa", mention.Thumbnail)
 	assert.Equal(t, "https://twitter.com/somebody", mention.AuthorURL)
+	assert.Equal(t, "https://twitter.com/bitworking/status/1125545560939933697#favorited-by-8855932", mention.URL)
 }

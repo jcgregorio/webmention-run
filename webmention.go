@@ -143,7 +143,11 @@ var (
 				{{ end }}
 			</span>
 			<time datetime="{{ .TS | rfc3999 }}">{{ .TS | humanTime }}</time>
-			<a class="wm-content" href="{{ .Source }}" rel=nofollow>
+				{{ if .URL }}
+			    <a class="wm-content" href="{{ .URL }}" rel=nofollow>
+				{{ else }}
+			    <a class="wm-content" href="{{ .Source }}" rel=nofollow>
+				{{ end }}
 				{{ if .Title }}
 					{{ .Title | trunc }}
 				{{ else }}
