@@ -187,11 +187,11 @@ func (m *Mentions) VerifyQueuedMentions(c *http.Client) {
 		mention.Published = time.Now()
 		mention.URL = mention.Source
 		m.log.Infof("Verifying queued webmention from %q", mention.Source)
-		if m.SlowValidate(mention, c) == nil {
+		if err := m.SlowValidate(mention, c); err == nil {
 			mention.State = GOOD_STATE
 		} else {
 			mention.State = SPAM_STATE
-			m.log.Infof("Failed to validate webmention: %#v", *mention)
+			m.log.Infof("Failed to validate webmention: %#v: %s", *mention, err)
 		}
 		if err := m.Put(context.Background(), mention); err != nil {
 			m.log.Warningf("Failed to save validated message: %s", err)

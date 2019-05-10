@@ -141,22 +141,6 @@ func TestParseMicroformatsBridgy(t *testing.T) {
 <meta charset="utf-8">
 <meta http-equiv="refresh" content="0;url=https://twitter.com/bitworking/status/1125545560939933697#favorited-by-8855932">
 <title>Some Body</title>
-<style type="text/css">
-body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-.p-uid {
-  display: none;
-}
-.u-photo {
-  max-width: 50px;
-  border-radius: 4px;
-}
-.e-content {
-  margin-top: 10px;
-  font-size: 1.3em;
-}
-</style>
 </head>
 <article class="h-entry">
   <span class="p-uid">tag:twitter.com,2013:1125545560939933697_favorited_by_8855932</span>
