@@ -23,8 +23,8 @@ import (
 	"willnorris.com/go/microformats"
 	"willnorris.com/go/webmention"
 
+	"github.com/jcgregorio/go-lib/ds"
 	"github.com/jcgregorio/slog"
-	"github.com/jcgregorio/webmention-run/ds"
 	"github.com/nfnt/resize"
 )
 

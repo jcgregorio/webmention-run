@@ -12,9 +12,9 @@ import (
 	units "github.com/docker/go-units"
 	"github.com/gorilla/mux"
 
+	"github.com/jcgregorio/go-lib/admin"
+	"github.com/jcgregorio/go-lib/config"
 	"github.com/jcgregorio/logger"
-	"github.com/jcgregorio/webmention-run/admin"
-	"github.com/jcgregorio/webmention-run/config"
 	"github.com/jcgregorio/webmention-run/mention"
 )
 
