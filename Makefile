@@ -1,5 +1,10 @@
 SHELL=/bin/bash
-include ./config.mk
+PROJECT=`jq -r .PROJECT config.json`
+REGION=`jq -r .REGION config.json`
+
+echo:
+	echo $(PROJECT) $(REGION)
+
 build-app:
 	go install ./webmention.go
 
@@ -7,16 +12,17 @@ run:
 	go run ./webmention.go
 
 release:
-	CGO_ENABLED=0 GOOS=linux go install -a ./webmention.go
-	mkdir -p ./build
 	rm -rf ./build/*
-	cp $(GOPATH)/bin/webmention ./build
+	mkdir -p ./build
+	GOBIN=`pwd`/build CGO_ENABLED=0 GOOS=linux go install -a ./webmention.go
+	install -d  ./build/usr/local/webmention-run/
+	install ./config.json ./build/usr/local/webmention-run/config.json
 	cp Dockerfile ./build
 	docker build ./build --tag webmention --tag gcr.io/$(PROJECT)/webmention
 	docker push gcr.io/$(PROJECT)/webmention
 
 push:
-	gcloud beta run deploy webmention --allow-unauthenticated --region $(REGION) --image gcr.io/$(PROJECT)/webmention --set-env-vars "$(shell cat config.mk | sed 's#export ##' | grep -v "^PORT=" | tr '\n' ',')"
+	gcloud beta run deploy webmention --allow-unauthenticated --region $(REGION) --image gcr.io/$(PROJECT)/webmention
 
 start_datastore_emulator:
 	 echo To attach run:

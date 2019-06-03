@@ -3,25 +3,71 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
+	"path/filepath"
+	"runtime"
 	"strconv"
 	"time"
 
 	units "github.com/docker/go-units"
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 
 	"github.com/jcgregorio/go-lib/admin"
-	"github.com/jcgregorio/go-lib/config"
 	"github.com/jcgregorio/logger"
 	"github.com/jcgregorio/webmention-run/mention"
+)
+
+// Config keys as found in config.json.
+const (
+	DATASTORE_NAMESPACE = "DATASTORE_NAMESPACE"
+	CLIENT_ID           = "CLIENT_ID"
+	REGION              = "REGION"
+	PROJECT             = "PROJECT"
+	ADMINS              = "ADMINS"
+	HOST                = "HOST"
+	AUTHOR              = "AUTHOR"
+)
+
+// flags
+var (
+	local        = flag.Bool("local", false, "Running locally if true. As opposed to in production.")
+	resourcesDir = flag.String("resources_dir", "", "The directory to find templates, JS, and CSS files. If blank the current directory will be used.")
 )
 
 var (
 	m *mention.Mentions
 
 	log = logger.New()
+
+	ad *admin.Admin
+
+	triageTemplate *template.Template
+
+	mentionsTemplate *template.Template
+)
+
+func initialize() {
+	flag.Parse()
+	viper.SetConfigType("json")
+	if *resourcesDir == "" {
+		_, filename, _, _ := runtime.Caller(0)
+		*resourcesDir = filepath.Join(filepath.Dir(filename))
+	}
+	f, err := os.Open(filepath.Join(*resourcesDir, "config.json"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := viper.ReadConfig(f); err != nil {
+		log.Fatal(err)
+	}
+	log.Infof("%q\n", *resourcesDir)
+
+	ad = admin.New(viper.GetString(CLIENT_ID), viper.GetStringSlice(ADMINS))
 
 	triageTemplate = template.Must(template.New("triage").Funcs(template.FuncMap{
 		"trunc": func(s string) string {
@@ -102,7 +148,7 @@ var (
 	 });
 	</script>
 </body>
-</html>`, config.CLIENT_ID)))
+</html>`, viper.GetString(CLIENT_ID))))
 
 	mentionsTemplate = template.Must(template.New("mentions").Funcs(template.FuncMap{
 		"humanTime": func(t time.Time) string {
@@ -157,11 +203,8 @@ var (
 	{{ end }}
 	</section>
 `))
-)
 
-func initialize() {
-	var err error
-	m, err = mention.NewMentions(context.Background(), config.PROJECT, config.DATASTORE_NAMESPACE, log)
+	m, err = mention.NewMentions(context.Background(), viper.GetString(PROJECT), viper.GetString(DATASTORE_NAMESPACE), log)
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -179,7 +222,7 @@ type triageContext struct {
 func triageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	context := &triageContext{}
-	isAdmin := admin.IsAdmin(r, log)
+	isAdmin := ad.IsAdmin(r, log)
 	if isAdmin {
 		limitText := r.FormValue("limit")
 		if limitText == "" {
@@ -218,7 +261,7 @@ type updateMention struct {
 // updateMentionHandler updates the triage state of a webmention.
 // Called from the Triage page.
 func updateMentionHandler(w http.ResponseWriter, r *http.Request) {
-	isAdmin := admin.IsAdmin(r, log)
+	isAdmin := ad.IsAdmin(r, log)
 	if !isAdmin {
 		http.Error(w, "Unauthorized", 401)
 	}
@@ -252,7 +295,7 @@ func mentionsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	context := MentionsContext{
-		Host:     config.HOST,
+		Host:     viper.GetString(HOST),
 		Mentions: mentions,
 	}
 	if err := mentionsTemplate.Execute(w, context); err != nil {
@@ -317,5 +360,9 @@ func main() {
 	r.HandleFunc("/", triageHandler).Methods("GET")
 
 	http.Handle("/", r)
-	log.Fatal(http.ListenAndServe(":"+config.PORT, nil))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "1313"
+	}
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

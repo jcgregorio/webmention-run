@@ -8,4 +8,4 @@ USER bitworking:bitworking
 
 COPY . /
 
-ENTRYPOINT ["/webmention"]
+ENTRYPOINT ["/webmention", "--resources_dir=/usr/local/webmention-run/"]
