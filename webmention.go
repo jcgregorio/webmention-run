@@ -62,6 +62,7 @@ func initialize() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer f.Close()
 	if err := viper.ReadConfig(f); err != nil {
 		log.Fatal(err)
 	}

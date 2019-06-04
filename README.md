@@ -24,15 +24,18 @@ Installation
 
 [First set up Google Cloud Run](https://cloud.google.com/run/docs/setup)
 
-Then clone this repository and edit config.mk:
+Then clone this repository and edit config.json:
 
-    export PROJECT=my-google-project-name
-    export REGION=us-central1
-    export HOST=https://webmention-blahblah.a.run.app
-    export CLIENT_ID=95264313...ps.googleusercontent.com
-    export DATASTORE_NAMESPACE=blog
-    export ADMINS=someone@example.com
-    export PORT=1313
+    {
+      "CLIENT_ID":"952643138919-jh0117ivtbqkc9njoh91csm7s465c4na.apps.googleusercontent.com",
+      "REGION":"us-central1",
+      "PROJECT":"heroic-muse-88515",
+      "DATASTORE_NAMESPACE":"blog",
+      "ADMINS":[
+        "joe.gregorio@gmail.com"
+      ],
+      "HOST":"https://webmention.bitworking.org"
+    }
 
 **PROJECT** - The name of your Google Cloud Project.
 
@@ -40,7 +43,7 @@ Then clone this repository and edit config.mk:
 
 **HOST** - The scheme and domain name where this is running. If you are using
   the randomly generated domain name that Google Cloud Run supplies you will
-  have to deploy this application first, find the name, update config.mk, and
+  have to deploy this application first, find the name, update config.json, and
   then redeploy with the correct HOST value.
 
 **CLIENT_ID** - Google Sign-In for Websites is used to protect the `/`
@@ -76,7 +79,7 @@ Now that the application is running you can add the following to your sites
 
     <link href="$HOST/IncomingWebMention" rel="webmention" />
 
-where $HOST is the value of HOST you set in `config.mk`. This indicates
+where $HOST is the value of HOST you set in `config.json`. This indicates
 that you site is capable of receiving webmentions. Put that link tag
 on every page you want to receive webmentions.
 
