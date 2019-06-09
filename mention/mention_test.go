@@ -184,3 +184,13 @@ func TestParseMicroformatsBridgy(t *testing.T) {
 	assert.Equal(t, "https://twitter.com/somebody", mention.AuthorURL)
 	assert.Equal(t, "https://twitter.com/bitworking/status/1125545560939933697#favorited-by-8855932", mention.URL)
 }
+
+func TestFastValidate(t *testing.T) {
+	m := New("https://example.com", "https://bitworking.org")
+	assert.NoError(t, m.FastValidate([]string{"bitworking.org"}))
+	assert.Error(t, m.FastValidate([]string{"random-subdomain.bitworking.org"}))
+
+	m = New("https://example.com", "https://stream.bitworking.org")
+	assert.NoError(t, m.FastValidate([]string{"bitworking.org", "stream.bitworking.org"}))
+	assert.Error(t, m.FastValidate([]string{"random-subdomain.bitworking.org"}))
+}

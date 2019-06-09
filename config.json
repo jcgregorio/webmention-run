@@ -6,5 +6,9 @@
   "ADMINS":[
     "joe.gregorio@gmail.com"
   ],
-  "HOST":"https://webmention.bitworking.org"
+  "HOST":"https://webmention.bitworking.org",
+  "TARGETS": [
+    "bitworking.org",
+    "stream.bitworking.org"
+  ]
 }

@@ -34,6 +34,15 @@ const (
 	THUMBNAIL        ds.Kind = "Thumbnail"
 )
 
+func in(s string, arr []string) bool {
+	for _, a := range arr {
+		if a == s {
+			return true
+		}
+	}
+	return false
+}
+
 func (m *Mentions) close(c io.Closer) {
 	if err := c.Close(); err != nil {
 		m.log.Warningf("Failed to close: %s", err)
@@ -119,7 +128,7 @@ func (m *Mention) key() string {
 	return fmt.Sprintf("%x", md5.Sum([]byte(m.Source+m.Target)))
 }
 
-func (m *Mention) FastValidate() error {
+func (m *Mention) FastValidate(validTargets []string) error {
 	if m.Source == "" {
 		return fmt.Errorf("Source is empty.")
 	}
@@ -133,7 +142,8 @@ func (m *Mention) FastValidate() error {
 	if err != nil {
 		return fmt.Errorf("Target is not a valid URL: %s", err)
 	}
-	if target.Hostname() != "bitworking.org" {
+
+	if !in(target.Hostname(), validTargets) {
 		return fmt.Errorf("Wrong target domain.")
 	}
 	if target.Scheme != "https" {
@@ -323,15 +333,6 @@ func (m *Mentions) Put(ctx context.Context, mention *Mention) error {
 }
 
 type UrlToImageReader func(url string) (io.ReadCloser, error)
-
-func in(s string, arr []string) bool {
-	for _, a := range arr {
-		if a == s {
-			return true
-		}
-	}
-	return false
-}
 
 func firstPropAsString(uf *microformats.Microformat, key string) string {
 	for _, sint := range uf.Properties[key] {

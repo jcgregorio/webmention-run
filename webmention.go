@@ -31,6 +31,7 @@ const (
 	ADMINS              = "ADMINS"
 	HOST                = "HOST"
 	AUTHOR              = "AUTHOR"
+	TARGETS             = "TARGETS"
 )
 
 // flags
@@ -311,7 +312,7 @@ func incomingWebMentionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	mention := mention.New(r.FormValue("source"), r.FormValue("target"))
-	if err := mention.FastValidate(); err != nil {
+	if err := mention.FastValidate(viper.GetStringSlice(TARGETS)); err != nil {
 		log.Infof("Invalid request: %s", err)
 		http.Error(w, fmt.Sprintf("Invalid request."), 400)
 		return
