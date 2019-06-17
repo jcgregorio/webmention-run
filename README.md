@@ -63,6 +63,10 @@ Then clone this repository and edit config.json:
 **PORT** - Used only for local testing, this is the port that the application
   should listen on for HTTP requests.
 
+**TARGETS** - A list of domain names to manage webmentions for, webmentions
+  that come in for domains not in this list will be ignored, i.e. marked as
+  spam.
+
 To build and push a docker image to your Google Cloud Container Registry:
 
     make release
