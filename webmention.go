@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	units "github.com/docker/go-units"
@@ -292,7 +293,14 @@ func mentionsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "OPTIONS" {
 		return
 	}
-	mentions := m.GetGood(r.Context(), r.Referer())
+	ref := r.Referer()
+	if len(ref) == 0 {
+		return
+	}
+	if strings.HasSuffix(ref, "/") {
+		ref = ref[:len(ref)-1]
+	}
+	mentions := m.GetGood(r.Context(), ref)
 	if len(mentions) == 0 {
 		return
 	}
