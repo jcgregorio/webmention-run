@@ -290,6 +290,7 @@ func mentionsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Referrer-Policy", "unsafe-url")
 	if r.Method == "OPTIONS" {
 		return
 	}

@@ -22,7 +22,7 @@ release:
 	docker push gcr.io/$(PROJECT)/webmention
 
 push:
-	gcloud beta run deploy webmention --allow-unauthenticated --region $(REGION) --image gcr.io/$(PROJECT)/webmention
+	gcloud beta run deploy webmention --allow-unauthenticated --region $(REGION) --image gcr.io/$(PROJECT)/webmention --project $(PROJECT) --platform managed
 
 start_datastore_emulator:
 	 echo To attach run:
